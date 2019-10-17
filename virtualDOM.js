@@ -1,25 +1,14 @@
-/** @jsx h */
-function h(type, props, ...children) {
-  return { type, props: props || {}, children };
-}
-
-//? ANCHOR: compare 2 node (old & new)
-const isChange = (vOldNode, vNewNode) => {
-  return (
-    typeof vOldNode !== typeof vNewNode ||
-    (typeof vOldNode === "string" && vOldNode !== vNewNode) ||
-    vOldNode.type !== vNewNode.type
-  );
-};
+import {
+  isChange,
+  isInvalidAttr,
+  isEventName,
+  convertEventNameValid
+} from "./src/utils";
 
 //? ANCHOR: set attribute (props: array)
 const setBoooleanAttr = (_target, nameAttr, valAttr) => {
   _target.setAttribute(nameAttr, valAttr);
   _target[nameAttr] = valAttr;
-};
-
-const isInvalidAttr = nameAttr => {
-  return false;
 };
 
 const setAttribute = (_target, nameAttr, valAttr) => {
@@ -76,6 +65,15 @@ const updateAttributes = (_target, newProps, oldProps = {}) => {
   });
 };
 
+//? ANCHOR: add event listener
+const addEventListener = (_target, props) => {
+  Object.entries(props).forEach(([name, val]) => {
+    if (isEventName(name)) {
+      _target.addEventListener(convertEventNameValid(name), val);
+    }
+  });
+};
+
 //? ANCHOR: render to real DOM
 const render = node => {
   // console.log("node: ", node);
@@ -85,6 +83,7 @@ const render = node => {
 
   let _parent = document.createElement(node.type);
   setAttributes(_parent, node.props);
+  addEventListener(_parent, node.props);
   node.children
     .map(_node => render(_node))
     .forEach(_node => _parent.appendChild(_node));
