@@ -9,14 +9,23 @@ const _btn = document.getElementsByClassName("btnRerender")[0];
 
 let oldVDOM = {
   type: "div",
-  props: { class: "parent" },
+  props: { className: "parent" },
   children: [
-    { type: "div", props: {}, children: ["1"] },
-    { type: "div", props: {}, children: ["3"] },
+    { type: "div", props: { className: "nguyenmanhcuong" }, children: ["1"] },
     {
       type: "div",
-      props: { class: "child" },
+      props: { className: "cuong" },
       children: [
+        "3",
+        { type: "div", props: {}, children: ["5"] },
+        { type: "div", props: {}, children: ["6"] }
+      ]
+    },
+    {
+      type: "div",
+      props: { className: "child" },
+      children: [
+        "nguyen manh cuong",
         { type: "div", props: {}, children: ["5"] },
         { type: "div", props: {}, children: ["6"] }
       ]
@@ -26,10 +35,10 @@ let oldVDOM = {
 
 let newVDOM = {
   type: "div",
-  props: { class: "parent" },
+  props: { className: "parent" },
   children: [
     { type: "div", props: {}, children: ["1"] },
-    { type: "div", props: {}, children: ["2"] },
+    { type: "div", props: { className: "cuongstf" }, children: ["2"] },
     { type: "div", props: {}, children: ["3"] }
   ]
 };
@@ -46,7 +55,7 @@ _btn.addEventListener("click", () => {
         ...newVDOM.children,
         {
           type: "div",
-          props: {},
+          props: { className: "nmcvue98" },
           children: ["Nguyen Manh Cuong"]
         }
       ]
