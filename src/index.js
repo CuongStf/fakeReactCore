@@ -37,7 +37,11 @@ let newVDOM = {
   type: "div",
   props: { className: "parent" },
   children: [
-    { type: "div", props: {}, children: ["1"] },
+    {
+      type: "button",
+      props: { onClick: () => alert(`nguyen manh cuong`) },
+      children: ["1"]
+    },
     { type: "div", props: { className: "cuongstf" }, children: ["2"] },
     { type: "div", props: {}, children: ["3"] }
   ]
