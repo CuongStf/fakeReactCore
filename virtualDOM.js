@@ -1,23 +1,9 @@
 /** @jsx h */
 function h(type, props, ...children) {
-  return { type, props, children };
+  return { type, props: props || {}, children };
 }
 
-//? render to real DOM
-const render = node => {
-  console.log("node: ", node);
-  if (!node.type) {
-    return document.createTextNode(node);
-  }
-
-  let _parent = document.createElement(node.type);
-  node.children
-    .map(_node => render(_node))
-    .forEach(_node => _parent.appendChild(_node));
-  return _parent;
-};
-
-//? compare 2 node (old & new)
+//? ANCHOR: compare 2 node (old & new)
 const isChange = (vOldNode, vNewNode) => {
   return (
     typeof vOldNode !== typeof vNewNode ||
@@ -26,32 +12,114 @@ const isChange = (vOldNode, vNewNode) => {
   );
 };
 
-//? update to real DOM
-export const updateElement = (parent, vNewNode, vOldNode, index = 0) => {
-  console.log("parent: ", parent);
-  console.log("vOldNode: ", vOldNode);
-  console.log("vNewNode: ", vNewNode);
-  // case vNewNode is text node
+//? ANCHOR: set attribute (props: array)
+const setBoooleanAttr = (_target, nameAttr, valAttr) => {
+  _target.setAttribute(nameAttr, valAttr);
+  _target[nameAttr] = valAttr;
+};
+
+const isInvalidAttr = nameAttr => {
+  return false;
+};
+
+const setAttribute = (_target, nameAttr, valAttr) => {
+  // console.log(_target);
+  // console.log(nameAttr);
+  // console.log(valAttr);
+  if (isInvalidAttr(nameAttr)) {
+    return;
+  } else if (nameAttr === "className") {
+    _target.setAttribute("class", valAttr);
+  } else if (typeof valAttr === "boolean") {
+    setBoooleanAttr(_target, nameAttr, valAttr);
+  } else {
+    _target.setAttribute(nameAttr, valAttr);
+  }
+};
+
+const setAttributes = (_target, props) => {
+  Object.entries(props).forEach(([nameAttr, valAttr]) => {
+    setAttribute(_target, nameAttr, valAttr);
+  });
+};
+
+//? ANCHOR: remove attribute
+const removeBooleanAttr = (_target, nameAttr, valAttr) => {
+  _target.removeAttribute(nameAttr);
+  _target[nameAttr] = false;
+};
+
+const removeAttribute = (_target, nameAttr, valAttr) => {
+  if (isInvalidAttr(nameAttr)) {
+    return;
+  } else if (nameAttr === "className") {
+    _target.removeAttribute("class");
+  } else if (typeof valAttr === "boolean") {
+    removeBooleanAttr(_target, nameAttr, valAttr);
+  } else {
+    _target.removeAttribute(nameAttr);
+  }
+};
+
+//? ANCHOR: update attribute element to DOM
+const updateAttribute = (_target, nameAttr, newValAttr, oldValAttr) => {
+  if (!newValAttr) {
+    removeAttribute(_target, nameAttr);
+  } else if (!oldValAttr || newValAttr !== oldValAttr) {
+    setAttribute(_target, nameAttr, newValAttr);
+  }
+};
+
+const updateAttributes = (_target, newProps, oldProps = {}) => {
+  Object.keys({ ...oldProps, ...newProps }).forEach(nameAttr => {
+    updateAttribute(_target, nameAttr, newProps[nameAttr], oldProps[nameAttr]);
+  });
+};
+
+//? ANCHOR: render to real DOM
+const render = node => {
+  // console.log("node: ", node);
+  if (!node.type) {
+    return document.createTextNode(node);
+  }
+
+  let _parent = document.createElement(node.type);
+  setAttributes(_parent, node.props);
+  node.children
+    .map(_node => render(_node))
+    .forEach(_node => _parent.appendChild(_node));
+  return _parent;
+};
+
+//? ANCHOR:  update to real DOM
+let isRemoveChild = 0;
+export const updateElement = (_parent, vNewNode, vOldNode, index = 0) => {
+  // console.log("_parent: ", _parent);
+  // console.log("vOldNode: ", vOldNode);
+  // console.log("vNewNode: ", vNewNode);
+  //*  case vNewNode is text node
   if (!vOldNode) {
-    parent.appendChild(render(vNewNode));
+    _parent.appendChild(render(vNewNode));
   } else if (!vNewNode) {
-    parent.removeChild(parent.childNodes[index]);
+    _parent.removeChild(_parent.childNodes[index - isRemoveChild]);
+    isRemoveChild++;
   } else if (isChange(vOldNode, vNewNode)) {
-    parent.replaceChild(render(vNewNode), parent.childNodes[index]);
+    _parent.replaceChild(render(vNewNode), _parent.childNodes[index]);
   } else if (vNewNode.type) {
-    // case vNewNode is node
+    //* case vNewNode is node
     for (
       let _idx = 0;
-      _idx < vOldNode.children.length || _idx < vNewNode.children.length;
+      _idx < vNewNode.children.length || _idx < vOldNode.children.length;
       _idx++
     ) {
-      console.log(`childNodes${index}:`, parent.childNodes[index]);
       updateElement(
-        parent.childNodes[index],
+        _parent.childNodes[index],
         vNewNode.children[_idx],
         vOldNode.children[_idx],
         _idx
       );
     }
+    isRemoveChild = 0;
+    updateAttributes(_parent.childNodes[index], vNewNode.props, vOldNode.props);
   }
 };
