@@ -74,6 +74,26 @@ const addEventListener = (_target, props) => {
   });
 };
 
+//? ANCHOR: remove event listener
+const removeEventListener = (_target, nameEvent) => {
+  _target.removeEventListener(convertEventNameValid(nameEvent));
+};
+
+const updateEvents = (_target, newProps, oldProps) => {
+  Object.keys({ ...oldProps, ...newProps }).forEach(nameAttr => {
+    if (isEventName(nameAttr)) {
+      if (!newProps[nameAttr]) {
+        _target.removeEventListener(convertEventNameValid(nameAttr));
+      } else {
+        _target.addEventListener(
+          convertEventNameValid(nameAttr),
+          newProps[nameAttr]
+        );
+      }
+    }
+  });
+};
+
 //? ANCHOR: render to real DOM
 const render = node => {
   // console.log("node: ", node);
@@ -120,5 +140,6 @@ export const updateElement = (_parent, vNewNode, vOldNode, index = 0) => {
     }
     isRemoveChild = 0;
     updateAttributes(_parent.childNodes[index], vNewNode.props, vOldNode.props);
+    updateEvents(_parent.childNodes[index], vNewNode.props, vOldNode.props);
   }
 };
