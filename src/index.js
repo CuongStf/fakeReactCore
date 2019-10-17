@@ -6,12 +6,20 @@ import { updateElement } from "../virtualDOM";
 
 const _parent = document.getElementsByClassName("vdom")[0];
 const _btn = document.getElementsByClassName("btnRerender")[0];
+let numberUpdate = 0;
 
 let oldVDOM = {
   type: "div",
   props: { className: "parent" },
   children: [
-    { type: "div", props: { className: "nguyenmanhcuong" }, children: ["1"] },
+    {
+      type: "div",
+      props: {
+        className: "nguyenmanhcuong",
+        onClick: () => alert(`nguyen manh cuong`)
+      },
+      children: ["1"]
+    },
     {
       type: "div",
       props: { className: "cuong" },
@@ -39,11 +47,15 @@ let newVDOM = {
   children: [
     {
       type: "button",
-      props: { onClick: () => alert(`nguyen manh cuong`) },
+      props: { onClick: () => alert(`cuongStf`) },
       children: ["1"]
     },
     { type: "div", props: { className: "cuongstf" }, children: ["2"] },
-    { type: "div", props: {}, children: ["3"] }
+    {
+      type: "div",
+      props: { onClick: () => alert(`event =))`) },
+      children: ["3"]
+    }
   ]
 };
 
@@ -51,7 +63,8 @@ updateElement(_parent, oldVDOM);
 _btn.addEventListener("click", () => {
   updateElement(_parent, newVDOM, oldVDOM);
   oldVDOM = { ...newVDOM };
-  console.log("old:", oldVDOM);
+  numberUpdate++;
+  // console.log("old:", oldVDOM);
   newVDOM = {
     ...newVDOM,
     ...{
@@ -59,11 +72,14 @@ _btn.addEventListener("click", () => {
         ...newVDOM.children,
         {
           type: "div",
-          props: { className: "nmcvue98" },
+          props: {
+            className: "nmcvue98",
+            onClick: () => alert(`add number ${numberUpdate}`)
+          },
           children: ["Nguyen Manh Cuong"]
         }
       ]
     }
   };
-  console.log("new:", newVDOM);
+  // console.log("new:", newVDOM);
 });
