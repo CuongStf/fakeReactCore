@@ -1,5 +1,7 @@
 # Full Test
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/CuongStf/fakeReactCore.svg)](https://greenkeeper.io/)
+
 [code DEMO: https://jsfiddle.net/CuongCoder/2tj5p6vg/2/](https://jsfiddle.net/CuongCoder/2tj5p6vg/2/)
 
 ## Available Scripts
